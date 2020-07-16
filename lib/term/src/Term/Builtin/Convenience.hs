@@ -31,6 +31,7 @@ renc :: (Term a, Term a, Term a) -> Term a
 renc (a, r, b)   = fAppNoEq rencSym [a,r,b]
 rdec :: (Term a, Term a) -> Term a
 rdec (a, b)      = fAppNoEq rencSym [a,b]
+rpk :: Term a -> Term a
 rpk a = fAppNoEq rpkSym [a]
 --z--
 

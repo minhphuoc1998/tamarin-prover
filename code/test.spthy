@@ -1,7 +1,7 @@
 theory Lee_Test
 begin
 
-builtins: random-encryption, bilinear-pairing, xor, diffie-hellman
+builtins: random-encryption, bilinear-pairing, xor, diffie-hellman, asymmetric-encryption
 functions: sign/2, checksign/2, dvp/4, checkdvp/4
 equations:
 //    renc(renc(m, r1, pk(sk)), r2, pk(sk)) = renc(m, r1*r2, pk(sk)),
