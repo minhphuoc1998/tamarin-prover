@@ -103,6 +103,9 @@ ppMaudeACSym o =
                       Mult  -> "mult"
                       Union -> "mun"
                       Xor   -> "xor"
+--z--
+--                      Radd  -> "radd"
+--z--
 
 -- | Pretty print a non-AC symbol for Maude.
 ppMaudeNoEqSym :: NoEqSym -> ByteString

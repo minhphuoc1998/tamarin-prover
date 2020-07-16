@@ -798,6 +798,10 @@ builtins thy0 =do
           *> extendSig symEncMaudeSig
       , try (symbol "asymmetric-encryption")
           *> extendSig asymEncMaudeSig
+--z--
+      , try (symbol "random-encryption")
+          *> extendSig randEncMaudeSig
+--z--
       , try (symbol "signing")
           *> extendSig signatureMaudeSig
       , try (symbol "revealing-signing")
@@ -830,6 +834,10 @@ diffbuiltins =
           *> extendSig symEncMaudeSig
       , try (symbol "asymmetric-encryption")
           *> extendSig asymEncMaudeSig
+--z--
+      , try (symbol "random-encryption")
+          *> extendSig randEncMaudeSig
+--z--
       , try (symbol "signing")
           *> extendSig signatureMaudeSig
       , try (symbol "revealing-signing")
@@ -847,7 +855,8 @@ functions =
         f   <- BC.pack <$> identifier <* opSlash
         k   <- fromIntegral <$> natural
         priv <- option Public (symbol "[private]" *> pure Private)
-        if (BC.unpack f `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor"])
+--        if (BC.unpack f `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor"])
+        if (BC.unpack f `elem` ["mun", "one", "exp", "mult", "inv", "pmult", "em", "zero", "xor", "radd"])
           then fail $ "`" ++ BC.unpack f ++ "` is a reserved function name for builtins."
           else return ()
         sig <- getState

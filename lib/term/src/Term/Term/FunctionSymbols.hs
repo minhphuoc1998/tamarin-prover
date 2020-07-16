@@ -34,6 +34,9 @@ module Term.Term.FunctionSymbols (
     , multSymString
     , zeroSymString
     , xorSymString
+--z--
+    , raddSymString
+--z--
 
     -- ** concrete symbols
     , diffSym
@@ -120,6 +123,11 @@ xorSymString = "xor"
 
 unionSymString :: ByteString
 unionSymString = "union"
+
+--z--
+raddSymString :: ByteString
+raddSymString = "radd"
+--z--
 
 emapSymString, pmultSymString :: ByteString
 emapSymString  = "em"

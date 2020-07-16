@@ -29,6 +29,9 @@ module Term.Maude.Signature (
   , dhMaudeSig
   , pairMaudeSig
   , asymEncMaudeSig
+--z--
+  , randEncMaudeSig
+--z--
   , symEncMaudeSig
   , signatureMaudeSig
   , revealSignatureMaudeSig
@@ -165,6 +168,11 @@ signatureMaudeSig       = maudeSig $ mempty {stFunSyms=signatureFunSig,stRules=s
 revealSignatureMaudeSig = maudeSig $ mempty {stFunSyms=revealSignatureFunSig,stRules=revealSignatureRules}
 hashMaudeSig            = maudeSig $ mempty {stFunSyms=hashFunSig}
 locationReportMaudeSig            = maudeSig $ mempty {stFunSyms=locationReportFunSig, stRules=locationReportRules}
+
+--z--
+randEncMaudeSig :: MaudeSig
+randEncMaudeSig         = maudeSig $ mempty {stFunSyms=randEncFunSig,stRules=randEncRules}
+--z--
 
 -- | The minimal maude signature.
 minimalMaudeSig :: Bool -> MaudeSig

@@ -55,6 +55,9 @@ module Term.Unification (
   , pairMaudeSig
   , symEncMaudeSig
   , asymEncMaudeSig
+--z--
+  , randEncMaudeSig
+--z--
   , signatureMaudeSig
   , locationReportMaudeSig
   , revealSignatureMaudeSig

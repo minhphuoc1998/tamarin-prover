@@ -18,6 +18,10 @@ module Term.Builtin.Rules (
   , signatureRules
   , revealSignatureRules
   , locationReportRules
+  --z--
+  , randEncRules
+  --z--
+
   -- * Convenience export
   , module Term.Builtin.Signature
 ) where
@@ -86,6 +90,11 @@ xorRules = S.fromList
     ]
   where
     zero  = fAppZero
+
+--z--
+randEncRules :: Set (CtxtStRule)
+randEncRules = S.fromList [ rdec (renc (x1, x3, pk x2), x2) `CtxtStRule` (StRhs [[0,0]] x1) ]
+--z--
 
 -- | The rewriting rules for standard subterm operators that are builtin.
 pairRules, symEncRules, asymEncRules, signatureRules, revealSignatureRules :: Set (CtxtStRule)
