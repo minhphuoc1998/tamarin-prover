@@ -315,7 +315,9 @@ mkDUnionRule t_prems t_conc =
 ------------------------------------------------------------------------------
 
 randIntruderRules ::  [IntrRuleAC]
-randIntruderRules = [] -- TODO
+randIntruderRules = [] -- TODO: add constructor rules for all functions (renc, rdec, rpk, rrand)
+                       --       add two deconstruction rules: one for rdec(renc(...)) (unlimited applications)
+                       --                               , and one for rrand(renc(...)) (limited to one application)
 
 ------------------------------------------------------------------------------
 -- Xor intruder rules
