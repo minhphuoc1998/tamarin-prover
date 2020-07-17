@@ -80,7 +80,12 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
             FMult ts | fAppOne `elem` ts  || any isProduct ts || invalidMult ts   -> False
             -- xor
             FXor ts | fAppZero `elem` ts  || any isXor ts || invalidXor ts   -> False
+--z--
+            -- radd
+            FRadd ts | any isRadd ts                         -> False
+--z--
             -- point multiplication
+            FXor ts | fAppZero `elem` ts  || any isXor ts || invalidXor ts   -> False
             FPMult _                  (viewTerm2 -> FPMult _ _) -> False
             FPMult (viewTerm2 -> One) _                         -> False
             -- bilinear map
@@ -95,6 +100,9 @@ nfViaHaskell t0 = reader $ \hnd -> check hnd
             FMult      ts    -> all go ts
             FXor       ts    -> all go ts
             FUnion     ts    -> all go ts
+            --z--
+            FRadd      ts    -> all go ts
+            --z--
             FAppNoEq _ ts    -> all go ts
             FAppC _    ts    -> all go ts
 

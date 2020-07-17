@@ -1,13 +1,14 @@
 theory Lee_Test
 begin
 
-builtins: random-encryption, bilinear-pairing, xor, diffie-hellman, asymmetric-encryption
-functions: sign/2, checksign/2, dvp/4, checkdvp/4
-equations:
-//    renc(renc(m, r1, pk(sk)), r2, pk(sk)) = renc(m, r1*r2, pk(sk)),
-    checksign(sign(m, sk), pk(sk)) = m,
+builtins: rerandomizable-encryption //, bilinear-pairing, xor, diffie-hellman, asymmetric-encryption
+functions: sign/2, checksign/2, dvp/4, checkdvp/4, pk/1 //, renc/3, rdec/2, rerand/3, rpk/1, radd/2, 
+equations: 
+    // rdec(renc(m, r, rpk(sk)), sk) = m,
+    // rerand(renc(m, r1, pk(sk)), r2, rpk(sk) ) = renc(m, radd(r1,r2), rpk(sk)),
+    checksign( sign(m, sk), pk(sk)) = m,
     checkdvp(dvp(x, renc(x, r, pk(sk1)), r, pk(sk2)), x, renc(x, r, pk(sk1)), pk(sk2)) = r
-
+    
 rule Register_Voter_pk:
     [ Fr(~ltkV) ] --[ ]-> [ !Ltk($V, ~ltkV), !Pk($V, pk(~ltkV)), Out(pk(~ltkV)) ]
     
@@ -26,7 +27,7 @@ rule V_1:
     [ Out(<e, s>), State_V_1(V, ~ltkV, $vote, ~r, T, ~ltkT) ]
 
 rule A_1:
-  let ea = renc(e, ~ra, pk(~ltkT))
+  let ea = rrand(e, ~ra, pk(~ltkT))
       sa = sign(ea, ~ltkA)
       dvp_p = dvp(e, ea, ~ra, pk(~ltkV))
   in

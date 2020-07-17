@@ -33,6 +33,9 @@ module Term.Term (
     , isInverse
     , isProduct
     , isXor
+    --z--
+    , isRadd
+    --z--
     , isUnion
     , isEMap
     , isNullaryPublicFunction
@@ -62,13 +65,17 @@ module Term.Term (
     , multSymString
     , zeroSymString
     , xorSymString
-    
+
     -- ** Function symbols
     , diffSym
     , expSym
     , pmultSym
     , oneSym
     , zeroSym
+    , rdecSym
+    , rencSym
+    , rrandSym
+    , rpkSym
 
     -- ** concrete signatures
     , dhFunSig
@@ -76,9 +83,11 @@ module Term.Term (
     , msetFunSig
     , xorFunSig
     , pairFunSig
+    , randEncFunSig
     , dhReducibleFunSig
     , bpReducibleFunSig
     , xorReducibleFunSig
+    , randEncReducibleFunSig
     , implicitFunSig
 
     , module Term.Term.Classes
@@ -157,6 +166,11 @@ isXor :: Show a => Term a -> Bool
 isXor (viewTerm2 -> FXor _) = True
 isXor _                     = False
 
+-- | 'True' iff the term is a well-formed radd.
+isRadd :: Show a => Term a -> Bool
+isRadd (viewTerm2 -> FRadd _) = True
+isRadd _                      = False
+
 -- | 'True' iff the term is a well-formed emap.
 isEMap :: Show a => Term a -> Bool
 isEMap (viewTerm2 -> FEMap _ _) = True
@@ -225,6 +239,7 @@ prettyTerm ppLit = ppTerm
     ppACOp Mult  = "*"
     ppACOp Union = "+"
     ppACOp Xor   = "⊕"
+    ppACOp Radd  = "radd"
 
     ppTerms sepa n lead finish ts =
         fcat . (text lead :) . (++[text finish]) .

@@ -18,6 +18,7 @@ module Term.Maude.Signature (
   , enableMSet
   , enableDiff
   , enableXor
+  , enableRand
   , stFunSyms
   , stRules
   , funSyms
@@ -82,6 +83,7 @@ data MaudeSig = MaudeSig
     , enableMSet         :: Bool
     , enableXor          :: Bool
     , enableDiff         :: Bool
+    , enableRand         :: Bool
     , stFunSyms          :: S.Set NoEqSym -- ^ function signature for subterm theory
     , stRules            :: S.Set CtxtStRule  -- ^ rewriting rules for subterm theory
 
@@ -94,33 +96,35 @@ data MaudeSig = MaudeSig
 
 -- | Smart constructor for maude signatures. Computes funSyms and irreducibleFunSyms.
 maudeSig :: MaudeSig -> MaudeSig
-maudeSig msig@(MaudeSig {enableDH,enableBP,enableMSet,enableXor,enableDiff=_,stFunSyms,stRules}) =
+maudeSig msig@(MaudeSig {enableDH,enableBP,enableMSet,enableXor,enableDiff=_,enableRand,stFunSyms,stRules}) =
     msig {enableDH=enableDH||enableBP, funSyms=allfuns, irreducibleFunSyms=irreduciblefuns}
   where
     allfuns = (S.map NoEq stFunSyms)
-                `S.union` (if enableDH || enableBP then dhFunSig   else S.empty)
-                `S.union` (if enableBP             then bpFunSig   else S.empty)
-                `S.union` (if enableMSet           then msetFunSig else S.empty)
-                `S.union` (if enableXor            then xorFunSig  else S.empty)
+                `S.union` (if enableDH || enableBP then dhFunSig      else S.empty)
+                `S.union` (if enableBP             then bpFunSig      else S.empty)
+                `S.union` (if enableMSet           then msetFunSig    else S.empty)
+                `S.union` (if enableXor            then xorFunSig     else S.empty)
+                `S.union` (if enableRand           then randEncFunSig else S.empty)
     irreduciblefuns = allfuns `S.difference` reducible
     reducible =
         S.fromList [ o | CtxtStRule (viewTerm -> FApp o _) _ <- S.toList stRules ]
-          `S.union` dhReducibleFunSig `S.union` bpReducibleFunSig `S.union` xorReducibleFunSig
+          `S.union` dhReducibleFunSig `S.union` bpReducibleFunSig `S.union` xorReducibleFunSig `S.union` randEncReducibleFunSig
 
 -- | A monoid instance to combine maude signatures.
 instance Semigroup MaudeSig where
-    MaudeSig dh1 bp1 mset1 xor1 diff1 stFunSyms1 stRules1 _ _ <>
-      MaudeSig dh2 bp2 mset2 xor2 diff2 stFunSyms2 stRules2 _ _ =
+    MaudeSig dh1 bp1 mset1 xor1 diff1 rand1 stFunSyms1 stRules1 _ _ <>
+      MaudeSig dh2 bp2 mset2 xor2 diff2 rand2 stFunSyms2 stRules2 _ _ =
           maudeSig (mempty {enableDH=dh1||dh2
                            ,enableBP=bp1||bp2
                            ,enableMSet=mset1||mset2
                            ,enableXor=xor1||xor2
                            ,enableDiff=diff1||diff2
+                           ,enableRand=rand1||rand2
                            ,stFunSyms=S.union stFunSyms1 stFunSyms2
                            ,stRules=S.union stRules1 stRules2})
 
 instance Monoid MaudeSig where
-    mempty = MaudeSig False False False False False S.empty S.empty S.empty S.empty
+    mempty = MaudeSig False False False False False False S.empty S.empty S.empty S.empty
 
 -- | Non-AC function symbols.
 noEqFunSyms :: MaudeSig -> NoEqFunSig
@@ -139,23 +143,25 @@ addCtxtStRule str msig =
 -- | Returns all rewriting rules including the rules
 --   for DH, BP, and multiset.
 rrulesForMaudeSig :: MaudeSig -> Set (RRule LNTerm)
-rrulesForMaudeSig (MaudeSig {enableDH, enableBP, enableMSet, enableXor, stRules}) =
+rrulesForMaudeSig (MaudeSig {enableDH, enableBP, enableMSet, enableXor, enableRand, stRules}) =
     (S.map ctxtStRuleToRRule stRules)
-    `S.union` (if enableDH   then dhRules   else S.empty)
-    `S.union` (if enableBP   then bpRules   else S.empty)
-    `S.union` (if enableMSet then msetRules else S.empty)
-    `S.union` (if enableXor  then xorRules  else S.empty)
+    `S.union` (if enableDH   then dhRules      else S.empty)
+    `S.union` (if enableBP   then bpRules      else S.empty)
+    `S.union` (if enableMSet then msetRules    else S.empty)
+    `S.union` (if enableXor  then xorRules     else S.empty)
+    `S.union` (if enableRand then randEncRules else S.empty)
 
 ------------------------------------------------------------------------------
 -- Builtin maude signatures
 ------------------------------------------------------------------------------
 
 -- | Maude signatures for the AC symbols.
-dhMaudeSig, bpMaudeSig, msetMaudeSig, xorMaudeSig :: MaudeSig
-dhMaudeSig   = maudeSig $ mempty {enableDH=True}
-bpMaudeSig   = maudeSig $ mempty {enableBP=True}
-msetMaudeSig = maudeSig $ mempty {enableMSet=True}
-xorMaudeSig  = maudeSig $ mempty {enableXor=True}
+dhMaudeSig, bpMaudeSig, msetMaudeSig, xorMaudeSig, randEncMaudeSig :: MaudeSig
+dhMaudeSig      = maudeSig $ mempty {enableDH=True}
+bpMaudeSig      = maudeSig $ mempty {enableBP=True}
+msetMaudeSig    = maudeSig $ mempty {enableMSet=True}
+xorMaudeSig     = maudeSig $ mempty {enableXor=True}
+randEncMaudeSig = maudeSig $ mempty {enableRand=True}
 
 -- | Maude signatures for the default subterm symbols.
 --pairMaudeSig :: Bool -> MaudeSig
@@ -167,12 +173,7 @@ asymEncMaudeSig         = maudeSig $ mempty {stFunSyms=asymEncFunSig,stRules=asy
 signatureMaudeSig       = maudeSig $ mempty {stFunSyms=signatureFunSig,stRules=signatureRules}
 revealSignatureMaudeSig = maudeSig $ mempty {stFunSyms=revealSignatureFunSig,stRules=revealSignatureRules}
 hashMaudeSig            = maudeSig $ mempty {stFunSyms=hashFunSig}
-locationReportMaudeSig            = maudeSig $ mempty {stFunSyms=locationReportFunSig, stRules=locationReportRules}
-
---z--
-randEncMaudeSig :: MaudeSig
-randEncMaudeSig         = maudeSig $ mempty {stFunSyms=randEncFunSig,stRules=randEncRules}
---z--
+locationReportMaudeSig  = maudeSig $ mempty {stFunSyms=locationReportFunSig, stRules=locationReportRules}
 
 -- | The minimal maude signature.
 minimalMaudeSig :: Bool -> MaudeSig
@@ -206,6 +207,7 @@ prettyMaudeSig sig = P.vcat
       , (enableBP,   "bilinear-pairing")
       , (enableMSet, "multiset")
       , (enableXor,  "xor")
+      , (enableRand, "rerandom-encryption")
       ]
 
     ppFunSymb (f,(k,priv)) = P.text $ BC.unpack f ++ "/" ++ show k ++ showPriv priv

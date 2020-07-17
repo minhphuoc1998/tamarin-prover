@@ -15,15 +15,6 @@ import qualified Data.Set as S
 -- Builtin symbols (pair and inv are defined in Term.Term)
 ----------------------------------------------------------------------
 
---z--
-rdecSym, rencSym :: NoEqSym
-rdecSym = ("rdec", (2, Public))
-rencSym = ("renc", (3, Public))
-
-rpkSym :: NoEqSym
-rpkSym = ("rpk", (1, Public))
---z--
-
 -- | Binary builtin function symbols.
 sdecSym, sencSym, adecSym, aencSym, signSym, revealSignSym, repSym, checkRepSym :: NoEqSym
 sdecSym = ("sdec",(2, Public))
@@ -63,11 +54,6 @@ symEncFunSig = S.fromList $ [ sdecSym, sencSym ]
 -- | The signature for asymmetric encryption.
 asymEncFunSig :: NoEqFunSig
 asymEncFunSig = S.fromList $ [ adecSym, aencSym, pkSym ]
-
---z--
-randEncFunSig :: NoEqFunSig
-randEncFunSig = S.fromList $ [ rdecSym, rencSym, rpkSym ]
---z--
 
 -- | The signature for cryptographic signatures.
 signatureFunSig :: NoEqFunSig

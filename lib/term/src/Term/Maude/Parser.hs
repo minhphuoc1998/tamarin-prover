@@ -3,7 +3,7 @@
 -- |
 -- Copyright   : (c) 2010, 2011 Benedikt Schmidt
 -- License     : GPL v3 (see LICENSE)
--- 
+--
 -- Maintainer  : Benedikt Schmidt <beschmi@gmail.com>
 --
 -- Pretty printing and parsing of Maude terms and replies.
@@ -104,7 +104,7 @@ ppMaudeACSym o =
                       Union -> "mun"
                       Xor   -> "xor"
 --z--
---                      Radd  -> "radd"
+                      Radd  -> "radd"
 --z--
 
 -- | Pretty print a non-AC symbol for Maude.
@@ -241,7 +241,7 @@ parseSubstitution msig = do
     endOfLine *> string "Solution " *> takeWhile1 isDigit *> endOfLine
     choice [ string "empty substitution" *> endOfLine *> pure []
            , many1 parseEntry]
-  where 
+  where
     parseEntry = (,) <$> (flip (,) <$> (string "x" *> decimal <* string ":") <*> parseSort)
                      <*> (string " --> " *> parseTerm msig <* endOfLine)
 
@@ -285,7 +285,7 @@ parseTerm msig = choice
                   ++ show allowedfunSyms
       where prefixLen      = BC.length funSymPrefix
             special        = ident `elem` ["list", "cons", "nil" ]
-            priv           = if (not special) && BC.isPrefixOf funSymPrefixPriv ident 
+            priv           = if (not special) && BC.isPrefixOf funSymPrefixPriv ident
                                then Private else Public
             op             = (if special then ident else BC.drop prefixLen ident
                              , ( length args, priv))

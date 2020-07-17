@@ -46,6 +46,7 @@ module Term.Unification (
   , enableMSet
   , enableXor
   , enableDiff
+  , enableRand
   , minimalMaudeSig
   , enableDiffMaudeSig
   , dhMaudeSig

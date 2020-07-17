@@ -6,7 +6,7 @@
 -- |
 -- Copyright   : (c) 2010-2012 Benedikt Schmidt & Simon Meier
 -- License     : GPL v3 (see LICENSE)
--- 
+--
 -- Maintainer  : Benedikt Schmidt <beschmi@gmail.com>
 --
 -- Term Algebra and related notions.
@@ -26,7 +26,7 @@ module Term.Term.Raw (
     , traverseTerm
     , fmapTerm
     , bindTerm
-    
+
     -- ** Smart constructors
     , lit
     , fApp
@@ -147,6 +147,9 @@ unsafefApp fsym as = FAPP fsym as
 data TermView2 a = FExp (Term a) (Term a)   | FInv (Term a) | FMult [Term a] | One
                  | FPMult (Term a) (Term a) | FEMap (Term a) (Term a)
                  | FXor [Term a] | Zero
+--z--
+                 | FRadd [Term a]
+--z--
                  | FUnion [Term a]
                  | FPair (Term a) (Term a)
                  | FDiff (Term a) (Term a)
@@ -167,6 +170,9 @@ viewTerm2 t@(FAPP (AC o) ts)
     acSymToConstr Mult  = FMult
     acSymToConstr Union = FUnion
     acSymToConstr Xor   = FXor
+    --z--
+    acSymToConstr Radd  = FRadd
+    --z--
 viewTerm2 (FAPP (C EMap) [ t1 ,t2 ]) = FEMap t1 t2
 viewTerm2 t@(FAPP (C _)  _)          = error $ "viewTerm2: malformed term `"++show t++"'"
 viewTerm2 t@(FAPP (NoEq o) ts) = case ts of
@@ -223,4 +229,3 @@ foldTerm fLIT fFAPP t = go t
 
 instance Sized a => Sized (Term a) where
     size = foldTerm size (const $ \xs -> sum xs + 1)
-

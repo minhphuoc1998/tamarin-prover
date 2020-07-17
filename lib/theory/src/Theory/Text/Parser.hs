@@ -799,7 +799,7 @@ builtins thy0 =do
       , try (symbol "asymmetric-encryption")
           *> extendSig asymEncMaudeSig
 --z--
-      , try (symbol "random-encryption")
+      , try (symbol "rerandomizable-encryption")
           *> extendSig randEncMaudeSig
 --z--
       , try (symbol "signing")
@@ -835,7 +835,7 @@ diffbuiltins =
       , try (symbol "asymmetric-encryption")
           *> extendSig asymEncMaudeSig
 --z--
-      , try (symbol "random-encryption")
+      , try (symbol "rerandomizable-encryption")
           *> extendSig randEncMaudeSig
 --z--
       , try (symbol "signing")

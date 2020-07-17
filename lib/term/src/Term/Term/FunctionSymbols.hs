@@ -7,7 +7,7 @@
 -- |
 -- Copyright   : (c) 2010-2012 Benedikt Schmidt & Simon Meier
 -- License     : GPL v3 (see LICENSE)
--- 
+--
 -- Maintainer  : Benedikt Schmidt <beschmi@gmail.com>
 --
 -- Function Symbols and Signatures.
@@ -48,16 +48,22 @@ module Term.Term.FunctionSymbols (
     , fstSym
     , sndSym
     , zeroSym
+    , rdecSym
+    , rencSym
+    , rrandSym
+    , rpkSym
 
     -- ** concrete signatures
     , dhFunSig
     , xorFunSig
     , bpFunSig
     , msetFunSig
+    , randEncFunSig
     , pairFunSig
     , dhReducibleFunSig
     , bpReducibleFunSig
     , xorReducibleFunSig
+    , randEncReducibleFunSig
     , implicitFunSig
     ) where
 
@@ -81,7 +87,7 @@ import qualified Data.Set as S
 ----------------------------------------------------------------------
 
 -- | AC function symbols.
-data ACSym = Union | Mult | Xor
+data ACSym = Union | Mult | Xor | Radd
   deriving (Eq, Ord, Typeable, Data, Show, Generic, NFData, Binary)
 
 -- | A function symbol can be either Private (unknown to adversary) or Public.
@@ -153,6 +159,16 @@ pmultSym = (pmultSymString,(2,Public))
 -- | The zero for XOR.
 zeroSym  = (zeroSymString,(0,Public))
 
+--z--
+rdecSym, rencSym, rrandSym :: NoEqSym
+rdecSym = ("rdec", (2, Public))
+rencSym = ("renc", (3, Public))
+rrandSym = ("rrand", (3, Public))
+
+rpkSym :: NoEqSym
+rpkSym = ("rpk", (1, Public))
+--z--
+
 ----------------------------------------------------------------------
 -- Fixed signatures
 ----------------------------------------------------------------------
@@ -173,6 +189,11 @@ bpFunSig = S.fromList [ NoEq pmultSym, C EMap ]
 msetFunSig :: FunSig
 msetFunSig = S.fromList [AC Union]
 
+--z--
+randEncFunSig :: FunSig
+randEncFunSig = S.fromList $ [ AC Radd, NoEq rdecSym, NoEq rencSym, NoEq rrandSym, NoEq rpkSym ]
+--z--
+
 -- | The signature for pairing.
 pairFunSig :: NoEqFunSig
 pairFunSig = S.fromList [ pairSym, fstSym, sndSym ]
@@ -188,6 +209,12 @@ bpReducibleFunSig = S.fromList [ NoEq pmultSym, C EMap ]
 -- | Reducible function symbols for XOR.
 xorReducibleFunSig :: FunSig
 xorReducibleFunSig = S.fromList [ AC Xor ]
+
+--z--
+-- | Reducible function symbols for randomizable encryption.
+randEncReducibleFunSig :: FunSig
+randEncReducibleFunSig = S.fromList [ AC Radd ]
+--z--
 
 -- | Implicit function symbols.
 implicitFunSig :: FunSig

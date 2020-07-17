@@ -22,15 +22,17 @@ b # e  = fAppAC Union [b,e]
 (+:) :: Ord a => Term a -> Term a -> Term a
 b +: e = fAppAC Xor [b,e]
 --z--
--- (-:) :: Ord a => Term a -> Term a -> Term a
--- radd (a, b) = fAppAc Xor [a,b]
+radd :: Ord a => Term a -> Term a -> Term a
+radd a b = fAppAC Radd [a,b]
 --z--
 
 --z--
 renc :: (Term a, Term a, Term a) -> Term a
 renc (a, r, b)   = fAppNoEq rencSym [a,r,b]
+rrand :: (Term a, Term a, Term a) -> Term a
+rrand (c, r, b)   = fAppNoEq rrandSym [c,r,b]
 rdec :: (Term a, Term a) -> Term a
-rdec (a, b)      = fAppNoEq rencSym [a,b]
+rdec (a, b)      = fAppNoEq rdecSym [a,b]
 rpk :: Term a -> Term a
 rpk a = fAppNoEq rpkSym [a]
 --z--

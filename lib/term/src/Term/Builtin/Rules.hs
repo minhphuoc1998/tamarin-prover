@@ -92,8 +92,11 @@ xorRules = S.fromList
     zero  = fAppZero
 
 --z--
-randEncRules :: Set (CtxtStRule)
-randEncRules = S.fromList [ rdec (renc (x1, x3, rpk x2), x2) `CtxtStRule` (StRhs [[0,0]] x1) ]
+randEncRules :: Set (RRule LNTerm)
+randEncRules = S.fromList [ rdec (renc (x1, x3, rpk x2), x2) `RRule` x1,
+                            rrand (renc (x1, x3, rpk x2), x4, rpk x2) `RRule` renc (x1, radd x3 x4, rpk x2) ]
+-- randEncRules = S.fromList [ rdec (renc (x1, x3, rpk x2), x2) `CtxtStRule` (StRhs [[0,0]] x1),
+--                             rrand (renc (x1, x3, rpk x2), x4, rpk x2) `CtxtStRule` (StRhs [[0,0],[0,1],[1],[0,2,0]] (renc (x1, radd x3 x4, rpk x2))) ] */
 --z--
 
 -- | The rewriting rules for standard subterm operators that are builtin.
