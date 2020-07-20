@@ -65,6 +65,13 @@ module Term.Term (
     , multSymString
     , zeroSymString
     , xorSymString
+--z--
+    , raddSymString
+    , rpkSymString
+    , rdecSymString
+    , rencSymString
+    , rrandSymString
+--z--
 
     -- ** Function symbols
     , diffSym

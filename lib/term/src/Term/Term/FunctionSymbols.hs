@@ -36,6 +36,10 @@ module Term.Term.FunctionSymbols (
     , xorSymString
 --z--
     , raddSymString
+    , rpkSymString
+    , rdecSymString
+    , rencSymString
+    , rrandSymString
 --z--
 
     -- ** concrete symbols
@@ -131,8 +135,12 @@ unionSymString :: ByteString
 unionSymString = "union"
 
 --z--
-raddSymString :: ByteString
+raddSymString, rpkSymString, rencSymString, rdecSymString, rrandSymString :: ByteString
 raddSymString = "radd"
+rpkSymString = "rpk"
+rencSymString = "renc"
+rdecSymString = "rdec"
+rrandSymString = "rrand"
 --z--
 
 emapSymString, pmultSymString :: ByteString
