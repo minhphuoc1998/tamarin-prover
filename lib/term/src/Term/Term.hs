@@ -234,6 +234,7 @@ prettyTerm ppLit = ppTerm
   where
     ppTerm t = case viewTerm t of
         Lit l                                     -> ppLit l
+        FApp (AC Radd)     ts                     -> text "radd" <> text "(" <> fsep (punctuate comma (map ppTerm ts)) <> text ")"
         FApp (AC o)        ts                     -> ppTerms (ppACOp o) 1 "(" ")" ts
         FApp (NoEq s)      [t1,t2] | s == expSym  -> ppTerm t1 <> text "^" <> ppTerm t2
         FApp (NoEq s)      [t1,t2] | s == diffSym -> text "diff" <> text "(" <> ppTerm t1 <> text ", " <> ppTerm t2 <> text ")"
@@ -246,7 +247,7 @@ prettyTerm ppLit = ppTerm
     ppACOp Mult  = "*"
     ppACOp Union = "+"
     ppACOp Xor   = "⊕"
-    ppACOp Radd  = "radd"
+    ppACOp Radd  = " radd "
 
     ppTerms sepa n lead finish ts =
         fcat . (text lead :) . (++[text finish]) .
