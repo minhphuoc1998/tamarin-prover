@@ -2,6 +2,7 @@ theory Lee_Test
 begin
 
 builtins: rerandomizable-encryption
+
 functions: sign/2, checksign/2, dvp/4, checkdvp/4, pk/1
 equations: 
     checksign(sign(m, sk), pk(sk)) = m,
@@ -9,7 +10,7 @@ equations:
 
 rule Register_Voter_pk:
     [ Fr(~ltkV) ] --[ ]-> [ !Ltk($V, ~ltkV), !Pk($V, pk(~ltkV)), Out(pk(~ltkV)) ]
-    
+
 rule Register_Admin_pk:
     [ Fr(~ltkA) ] --[ ]-> [ !AdminLtk($A, ~ltkA), !AdminPk($A, pk(~ltkA)), Out(pk(~ltkA)) ]
 
