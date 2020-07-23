@@ -14,8 +14,8 @@ rule V_1:
     [ Out(e), State_V_1(T, ~ltkT, ~r) ]
 
 rule A_1:
-//  let ea = rrand(e, radd(~ra, ~rb), rpk(~ltkT))
-  let ea = rrand(e, ~ra, rpk(~ltkT))
+  let ea = rrand(e, ~ra radd ~rb, rpk(~ltkT))
+//  let ea = rrand(e, ~ra, rpk(~ltkT))
   in
     [ Fr(~ra), Fr(~rb), !TallyerRpk(T, rpk(~ltkT)), In(e) ]
   --[ Reencrypt(e, ea) ]->

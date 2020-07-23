@@ -240,13 +240,21 @@ xorterm plit = do
         then chainl1 (multterm plit) ((\a b -> fAppAC Xor [a,b]) <$ opXor)
         else multterm plit
 
+-- | A left-associative sequence of radds.
+raddterm :: Ord l => Parser (Term l) -> Parser (Term l)
+raddterm plit = do
+    radd <- enableRand <$> getState
+    if radd -- if radd is not enabled, do not accept 'raddterms's
+        then chainl1 (xorterm plit) ((\a b -> fAppAC Radd [a,b]) <$ opRadd)
+        else xorterm plit
+
 -- | A left-associative sequence of multiset unions.
 msetterm :: Ord l => Parser (Term l) -> Parser (Term l)
 msetterm plit = do
     mset <- enableMSet <$> getState
     if mset -- if multiset is not enabled, do not accept 'msetterms's
-        then chainl1 (xorterm plit) ((\a b -> fAppAC Union [a,b]) <$ opPlus)
-        else xorterm plit
+        then chainl1 (raddterm plit) ((\a b -> fAppAC Union [a,b]) <$ opPlus)
+        else raddterm plit
 
 -- | A right-associative sequence of tuples.
 tupleterm :: Ord l => Parser (Term l) -> Parser (Term l)

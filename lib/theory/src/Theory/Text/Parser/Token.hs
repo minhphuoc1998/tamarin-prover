@@ -44,6 +44,7 @@ module Theory.Text.Parser.Token (
   , opMult
 
   , opXor
+  , opRadd
 
   , opEqual
   , opLess
@@ -221,7 +222,7 @@ naturalSubscript = T.lexeme spthy $ do
   where
     subscriptDigitToInteger d = toInteger $ fromEnum d - fromEnum '₀'
 
-    
+
 -- | A comma separated list of elements.
 commaSep :: Parser a -> Parser [a]
 commaSep = T.commaSep spthy
@@ -335,6 +336,10 @@ opPlus = symbol_ "+"
 -- | The xor operator @XOR@ or @⊕@.
 opXor :: Parser ()
 opXor = symbol_ "XOR" <|> symbol_ "⊕"
+
+-- | The xor operator @XOR@ or @⊕@.
+opRadd :: Parser ()
+opRadd = symbol_ "radd"
 
 -- | The timepoint comparison operator @<@.
 opLess :: Parser ()
