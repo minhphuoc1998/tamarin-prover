@@ -1,0 +1,40 @@
+theory REnc_Test1
+begin
+
+builtins: rerandomizable-encryption
+
+rule Register_Tallyer_rpk:
+    [ Fr(~ltkT) ] --[ ]-> [ !TallyerLtkr($T, ~ltkT), !TallyerRpk($T, rpk(~ltkT)), Out(rpk(~ltkT)) ]
+
+rule V_1:
+  let e = renc('aaa', ~r, rpk(~ltkT))
+  in
+    [ Fr(~r), !TallyerRpk(T, rpk(~ltkT)) ]
+  --[ Encrypt('aaa', e, ~r, rpk(~ltkT)) ]->
+    [ Out(e), State_V_1(T, ~ltkT, ~r) ]
+
+rule A_1:
+//  let ea = rrand(e, radd(~ra, ~rb), rpk(~ltkT))
+  let ea = rrand(e, ~ra, rpk(~ltkT))
+  in
+    [ Fr(~ra), Fr(~rb), !TallyerRpk(T, rpk(~ltkT)), In(e) ]
+  --[ Reencrypt(e, ea) ]->
+    [ Out(ea), State_A_1(T, ~ltkT, ~ra) ]
+
+rule T_1:
+  let m = rdec(ea, ~ltkT)
+  in
+    [ In(ea),  !TallyerLtkr($T, ~ltkT) ]
+  --[ Decrypt(ea, m) ]->
+    [ Out(m) ]
+
+lemma exec:
+    exists-trace
+    " Ex ea m #i. Decrypt(ea, m) @i "
+
+//lemma knowledge:
+//  let cp = renc('aaa', radd(r, 'mmm'), rpk(k))
+//  in
+//    "All e r #i. Encrypt('aaa', e, r, k) @i ==> Ex #j. K(renc('aaa', radd(r, 'mmm'), k)) @j"
+
+end

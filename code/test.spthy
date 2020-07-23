@@ -2,14 +2,11 @@ theory Lee_Test
 begin
 
 builtins: rerandomizable-encryption
-// functions: sign/2, checksign/2, dvp/4, checkdvp/4, pk/1 //, renc/3, rdec/2, rerand/3, rpk/1, radd/2
-functions: sign/2, checksign/2, dvp/4, checkdvp/4, pk/1, rerand/3
+functions: sign/2, checksign/2, dvp/4, checkdvp/4, pk/1
 equations: 
-    // rdec(renc(m, r, rpk(sk)), sk) = m,
-    // rerand(renc(m, r1, rpk(sk)), r2, rpk(sk)) = renc(m, radd(r1,r2), rpk(sk)),
-    checksign( sign(m, sk), pk(sk)) = m,
-    checkdvp(dvp(x, renc(x, r, pk(sk1)), r, pk(sk2)), x, renc(x, r, pk(sk1)), pk(sk2)) = r
-    
+    checksign(sign(m, sk), pk(sk)) = m,
+    checkdvp(dvp(x, renc(x, r, rpk(sk1)), r, rpk(sk2)), x, renc(x, r, rpk(sk1)), rpk(sk2)) = r
+
 rule Register_Voter_pk:
     [ Fr(~ltkV) ] --[ ]-> [ !Ltk($V, ~ltkV), !Pk($V, pk(~ltkV)), Out(pk(~ltkV)) ]
     
@@ -19,28 +16,45 @@ rule Register_Admin_pk:
 rule Register_Tallyer_pk:
     [ Fr(~ltkT) ] --[ ]-> [ !TallyerLtk($T, ~ltkT), !TallyerPk($T, pk(~ltkT)), Out(pk(~ltkT)) ]
 
+rule Register_Voter_rpk:
+    [ Fr(~ltkV) ] --[ ]-> [ !Ltkr($V, ~ltkV), !Rpk($V, rpk(~ltkV)), Out(rpk(~ltkV)) ]
+
+rule Register_Admin_rpk:
+    [ Fr(~ltkA) ] --[ ]-> [ !AdminLtkr($A, ~ltkA), !AdminRpk($A, rpk(~ltkA)), Out(rpk(~ltkA)) ]
+
+rule Register_Tallyer_rpk:
+    [ Fr(~ltkT) ] --[ ]-> [ !TallyerLtkr($T, ~ltkT), !TallyerRpk($T, rpk(~ltkT)), Out(rpk(~ltkT)) ]
+
 rule V_1:
-  let e = renc($vote, ~r, pk(~ltkT))
+  let e = renc($vote, ~r, rpk(~ltkT))
       s = sign(e, ~ltkV)
   in
-    [ Fr(~r), !TallyerPk(T, pk(~ltkT)), !Ltk(V, ~ltkV) ]
+    [ Fr(~r), !TallyerRpk(T, rpk(~ltkT)), !Ltk(V, ~ltkV) ]
   --[ Voted($vote), Create_V_1(e) ]->
     [ Out(<e, s>), State_V_1(V, ~ltkV, $vote, ~r, T, ~ltkT) ]
 
 rule A_1:
-  let ea = rrand(e, ~ra, pk(~ltkT))
+  let ea = rrand(e, ~ra, rpk(~ltkT))
       sa = sign(ea, ~ltkA)
-      dvp_p = dvp(e, ea, ~ra, pk(~ltkV))
+      dvp_p = dvp(e, ea, ~ra, rpk(~ltkV))
   in
-    [ Fr(~ra), In(<e, sign(e, ~ltkV)>), !TallyerPk(A, pk(~ltkT)), !AdminLtk(A, ~ltkA), !Pk(V, pk(~ltkV)), State_V_1(V, ~ltkV, $vote, r, T, ~ltkT) ]
-  --[ ValidVoterSig(e, sign(e, ~ltkV)), Registered(ea) ]->
+    [ Fr(~ra), In(<e, sign(e, ~ltkV1)>), !TallyerRpk(A, rpk(~ltkT)), !AdminLtk(A, ~ltkA), !Rpk(V, rpk(~ltkV)), State_V_1(V, ~ltkV1, $vote, r, T, ~ltkT) ]
+  --[ ValidVoterSig(e, sign(e, ~ltkV1)), Registered(ea) ]->
     [ Out(<ea, sa, dvp_p>), State_A_1(V, A, e, ~ra) ]
+
+// rule V_2:
+//    let sa = sign(ea, ~ltkA)
+//        dvp_p = dvp(e, ea, ra, pk(~ltkV))
+//    in
+//    [ In(<ea, sa, dvp_p>), !AdminPk(A, pk(~ltkA)), !Ltk(V, ~ltkV), State_V_1(V, ~ltkV, $vote, ~r, T, ~ltkT) ]
+//  --[ ValidAdminSig_V(ea, sa), EncVotePublished(ea, sa) ]->
+//    [ Out(<ea, sa>) ]
 
 rule T_1:
     let v = rdec(ea, ~ltkT)
     in
-    [ In(<ea, sign(ea, ~ltkA)>), !AdminPk(A, pk(~ltkA)), !TallyerLtk(T, ~ltkT) ]
-  --[ ValidAdminSig_T(ea, sign(ea, ~ltkA)), VotePublished(v) ]->
+    [ In(<ea, sign(ea, ~ltkA1)>), !AdminPk(A, pk(~ltkA1)), !TallyerLtkr(T, ~ltkT) ]
+  --[ ValidAdminSig_T(ea, sign(ea, ~ltkA1)), VotePublished(v) ]->
     [ Out(v) ]
 
 lemma exec:
