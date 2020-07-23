@@ -184,6 +184,11 @@ ppTheory msig = BC.unlines $
        , theoryOp "xor : Msg Msg -> Msg [comm assoc]" ]
        else [])
     ++
+    (if enableRand msig
+       then
+       [ theoryOp "radd : Msg Msg -> Msg [comm assoc]" ]
+       else [])
+    ++
     map theoryFunSym (S.toList $ stFunSyms msig)
     ++
     map theoryRule (S.toList $ rrulesForMaudeSig msig)
@@ -300,6 +305,7 @@ parseTerm msig = choice
         appIdent args  | ident == ppMaudeACSym Mult       = fAppAC Mult  args
                        | ident == ppMaudeACSym Union      = fAppAC Union args
                        | ident == ppMaudeACSym Xor        = fAppAC Xor   args
+                       | ident == ppMaudeACSym Radd       = fAppAC Radd  args
                        | ident == ppMaudeCSym  EMap       = fAppC  EMap  args
         appIdent [arg] | ident == "list"                  = fAppList (flattenCons arg)
         appIdent args                                     = fAppNoEq op args
